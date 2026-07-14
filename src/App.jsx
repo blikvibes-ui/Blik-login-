@@ -28,19 +28,18 @@ onLogout }) {
         yet. Check back once you've been 
         notified, or contact whoever 
         invited you.
-      </p> <button type="button" 
-        onClick={onLogout} style={{
-          background: "transparent", 
-          border: "1px solid 
-          rgba(255,56,96,0.4)", color: 
-          "#ff6f93", fontFamily: 
-          "inherit", fontSize: 11, 
-          padding: "8px 16px", 
-          borderRadius: 4, cursor: 
-          "pointer",
-        }}
-      >
-        Logout </button> </div> );
+      </p> 
+<button
+  onClick={onLogout}
+  style={{
+    background: "transparent",
+    border: "1px solid rgba(255,56,96,0.4)",
+    color: "#ff6f93",
+    fontFamily: "Poppins, sans-serif"
+  }}
+>
+  Logout
+</button> </div> );
 }
 export default function App() { const 
   [user, setUser] = useState(null); // 
