@@ -1,6 +1,6 @@
-import React, { useState } from "react"; 
-import { ShieldCheck, LogOut, KeyRound, 
-UserPlus, Terminal, Copy, Check } from 
+import React, { useState, useEffect } 
+from "react"; import { ShieldCheck, 
+LogOut, UserPlus, Terminal, Users } from 
 "lucide-react"; import { authApi } from 
 "../api/supabaseAuth"; const BRAND = {
   footer: "Blikvibes Login Page", 
@@ -190,45 +190,47 @@ user, onLoggedOut }) {
         }
       `}</style> </div> );
 }
-function AdminPanel() { const 
-  [inviteResult, setInviteResult] = 
-  useState(null); const [inviteError, 
-  setInviteError] = useState(null); 
-  const [generating, setGenerating] = 
-  useState(false); const [copied, 
-  setCopied] = useState(false); const 
-  [promoteEmail, setPromoteEmail] = 
-  useState(""); const [promoteStatus, 
-  setPromoteStatus] = useState(null); 
-  const [promoting, setPromoting] = 
-  useState(false); const 
-  handleGenerateInvite = async () => {
-    setGenerating(true); 
-    setInviteError(null); 
-    setInviteResult(null); try {
-      const result = await 
-      authApi.createInvite(168); 
-      setInviteResult(result);
+function AdminPanel() { const [pending, 
+  setPending] = useState([]); const 
+  [loadingPending, setLoadingPending] = 
+  useState(true); const [pendingError, 
+  setPendingError] = useState(null); 
+  const [approvingId, setApprovingId] = 
+  useState(null); const [promoteEmail, 
+  setPromoteEmail] = useState(""); const 
+  [promoteStatus, setPromoteStatus] = 
+  useState(null); const [promoting, 
+  setPromoting] = useState(false); const 
+  loadPending = async () => {
+    setLoadingPending(true); 
+    setPendingError(null); try {
+      const list = await 
+      authApi.listPendingUsers(); 
+      setPending(list);
     } catch (err) {
-      setInviteError(err instanceof 
+      setPendingError(err instanceof 
       Error ? err.message : "Something 
       went wrong.");
     } finally {
-      setGenerating(false);
+      setLoadingPending(false);
     }
   };
-  const handleCopy = async () => { if 
-    (!inviteResult) return; try {
+  useEffect(() => { loadPending();
+  }, []);
+  const handleApprove = async (person) 
+  => {
+    setApprovingId(person.id); try { 
       await 
-      navigator.clipboard.writeText(inviteResult.inviteCode); 
-      setCopied(true); setTimeout(() => 
-      setCopied(false), 2000);
-    } catch {
-      // Clipboard API can fail/be 
-      // unavailable — the code is still 
-      // shown on screen for manual 
-      // copy, so this is a soft 
-      // failure.
+      authApi.approveUser(person.email); 
+      setPending((prev) => 
+      prev.filter((p) => p.id !== 
+      person.id));
+    } catch (err) {
+      setPendingError(err instanceof 
+      Error ? err.message : "Something 
+      went wrong.");
+    } finally {
+      setApprovingId(null);
     }
   };
   const handlePromote = async (e) => { 
@@ -258,28 +260,37 @@ function AdminPanel() { const
       tools</h2> <div 
       className="dash-admin-block">
         <p className="dash-admin-label"> 
-          <KeyRound size={13} 
-          aria-hidden="true" /> Generate 
-          invite code
-        </p> <button type="button" 
-        className="dash-btn" 
-        onClick={handleGenerateInvite} 
-        disabled={generating}>
-          {generating ? "Generating…" : 
-          "Generate 7-day invite"}
-        </button> {inviteError && <p 
-        className="dash-err">{inviteError}</p>} 
-        {inviteResult && (
-          <div 
-          className="dash-invite-result">
-            <code>{inviteResult.inviteCode}</code> 
-            <button type="button" 
-            onClick={handleCopy} 
-            aria-label="Copy invite 
-            code">
-              {copied ? <Check size={14} 
-              /> : <Copy size={14} />}
-            </button> </div> )} </div> 
+          <Users size={13} 
+          aria-hidden="true" /> Pending 
+          approvals {pending.length > 0 
+          && <span 
+          className="dash-count">{pending.length}</span>}
+        </p> {loadingPending && <p 
+        className="dash-muted">Loading…</p>} 
+        {pendingError && <p 
+        className="dash-err">{pendingError}</p>} 
+        {!loadingPending && 
+        !pendingError && pending.length 
+        === 0 && ( <p 
+          className="dash-muted">No one 
+          waiting on approval.</p>
+        )} {pending.map((person) => ( 
+          <div key={person.id} 
+          className="dash-pending-row">
+            <div> <p 
+              className="dash-pending-name">{person.username}</p> 
+              <p 
+              className="dash-pending-email">{person.email}</p>
+            </div> <button type="button" 
+              className="dash-btn 
+              dash-btn-sm" onClick={() 
+              => handleApprove(person)} 
+              disabled={approvingId === 
+              person.id}
+            >
+              {approvingId === person.id 
+              ? "…" : "Approve"}
+            </button> </div> ))} </div> 
       <div className="dash-admin-block">
         <p className="dash-admin-label"> 
           <UserPlus size={13} 
@@ -326,7 +337,32 @@ function AdminPanel() { const
           11.5px; color: #7fa8ab; 
           margin: 0 0 8px;
         }
-        .dash-btn { background: 
+        .dash-count { background: 
+          rgba(255,176,0,0.18); color: 
+          #ffb000;
+          font-size: 10px; padding: 1px 
+          7px; border-radius: 10px; 
+          font-weight: 700;
+        }
+        .dash-muted { color: #5c8286; 
+        font-size: 11.5px; margin: 4px 
+        0; } .dash-pending-row {
+          display: flex; align-items: 
+          center; justify-content: 
+          space-between; gap: 10px; 
+          background: rgba(0,0,0,0.3); 
+          border: 1px solid rgba(176, 
+          38, 255,0.2); border-radius: 
+          4px; padding: 8px 10px; 
+          margin-bottom: 6px;
+        }
+        .dash-pending-name { margin: 0; 
+        font-size: 12.5px; color: 
+        #e8f4f4; }
+        .dash-pending-email { margin: 
+        2px 0 0; font-size: 10.5px; 
+        color: #7fa8ab; } .dash-btn {
+          background: 
           linear-gradient(180deg, 
           #ffb000, #d68f00);
           border: none; border-radius: 
@@ -335,32 +371,15 @@ function AdminPanel() { const
           font-weight: 700; font-size: 
           11.5px; letter-spacing: 
           0.06em; padding: 9px 14px; 
-          cursor: pointer;
-        }
-        .dash-btn:disabled { opacity: 
-        0.6; cursor: progress; } 
-        .dash-invite-result {
-          display: flex; align-items: 
-          center; gap: 8px; margin-top: 
-          10px; background: 
-          rgba(0,0,0,0.35); border: 1px 
-          solid rgba(57,255,136,0.3); 
-          border-radius: 4px; padding: 
-          8px 10px;
-        }
-        .dash-invite-result code { flex: 
-          1; font-size: 11px; color: 
-          #39ff88;
-          word-break: break-all;
-        }
-        .dash-invite-result button { 
-          background: transparent; 
-          border: none; color: #39ff88; 
           cursor: pointer; flex-shrink: 
           0;
         }
-        .dash-promote-form { display: 
-          flex; gap: 8px;
+        .dash-btn-sm { padding: 6px 
+        12px; font-size: 10.5px; } 
+        .dash-btn:disabled { opacity: 
+        0.6; cursor: progress; } 
+        .dash-promote-form {
+          display: flex; gap: 8px;
         }
         .dash-promote-form input { flex: 
           1; background: 
