@@ -1,0 +1,21 @@
+{
+  "productName": "NEXUS // ACCESS TERMINAL",
+  "footer": "Blikvibes Login Page",
+  "theme": {
+    "background": "#05070c",
+    "accentPrimary": "#ffb000",
+    "accentSecondary": "#b026ff",
+    "accentDanger": "#ff3860",
+    "accentSuccess": "#39ff88"
+  },
+  "logo": {
+    "status": "PLACEHOLDER — no real asset yet",
+    "expectedPath": "/src/assets/logo.svg",
+    "note": "TODO(you): drop your real logo at src/assets/logo.svg (SVG preferred, ~32px tall) and it will replace the placeholder mark automatically. See the TODO comment in src/components/CyberpunkAuth.jsx."
+  },
+  "session": {
+    "cookieName": "nexus_session",
+    "csrfCookieName": "nexus_csrf",
+    "sessionTTLMinutes": 30
+  }
+}
