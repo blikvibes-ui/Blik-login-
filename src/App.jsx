@@ -3,7 +3,7 @@ from "react"; import CyberpunkAuth from
 "./components/CyberpunkAuth"; import 
 Dashboard from "./components/Dashboard"; 
 import { authApi } from 
-"./api/supabaseAuth"; import { supabase 
+"./api/supabaseAuth"; import { supabase
 } from "./api/supabaseClient";
 const pendingScreenStyle = { minHeight: 
   "100vh", display: "flex", 
