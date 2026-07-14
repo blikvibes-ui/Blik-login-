@@ -10,9 +10,8 @@ const pendingScreenStyle = { minHeight:
   flexDirection: "column", alignItems: 
   "center", justifyContent: "center", 
   gap: 16, background: "#05070c", color: 
-  "#d7e6e6", fontFamily: "ui-monospace, 
-  monospace", padding: 24, textAlign: 
-  "center",
+  "#d7e6e6", fontFamily: "monospace", 
+  padding: 24, textAlign: "center",
 };
 function PendingApprovalScreen({ 
 onLogout }) {
@@ -20,11 +19,10 @@ onLogout }) {
     style={pendingScreenStyle}>
       <p style={{ color: "#ffb000", 
       fontSize: 13, letterSpacing: 
-      "0.1em" }}>
-        ACCESS PENDING </p> <p style={{ 
-      fontSize: 13, maxWidth: 360, 
-      lineHeight: 1.6, color: "#7fa8ab" 
-      }}>
+      "0.1em" }}>ACCESS PENDING</p> <p 
+      style={{ fontSize: 13, maxWidth: 
+      360, lineHeight: 1.6, color: 
+      "#7fa8ab" }}>
         Your account is verified but 
         hasn't been approved by an admin 
         yet. Check back once you've been 
@@ -45,9 +43,10 @@ onLogout }) {
         Logout </button> </div> );
 }
 export default function App() { const 
-  [user, setUser] = useState(null); 
-  const [loading, setLoading] = 
-  useState(true); useEffect(() => {
+  [user, setUser] = useState(null); // 
+  PublicUser | null const [loading, 
+  setLoading] = useState(true); 
+  useEffect(() => {
     let active = true; 
     authApi.me().then((u) => {
       if (active) { setUser(u); 
@@ -64,7 +63,7 @@ export default function App() { const
       setUser(u);
     });
     return () => { active = false; 
-      subscription?.unsubscribe();
+      subscription.subscription.unsubscribe();
     };
   }, []);
   const handleLogout = async () => { 
@@ -72,16 +71,14 @@ export default function App() { const
     setUser(null);
   };
   if (loading) { return ( <div style={{ 
-          minHeight: "100vh", display: 
-          "flex", alignItems: "center", 
-          justifyContent: "center", 
-          background: "#05070c", color: 
-          "#7fa8ab", fontFamily: 
-          "ui-monospace, monospace", 
-          fontSize: 12, letterSpacing: 
-          "0.08em",
-        }}
-      >
+        minHeight: "100vh", display: 
+        "flex", alignItems: "center", 
+        justifyContent: "center", 
+        background: "#05070c", color: 
+        "#7fa8ab", fontFamily: 
+        "monospace", fontSize: 12, 
+        letterSpacing: "0.08em",
+      }}>
         LOADING… </div> );
   }
   if (user && !user.approved) { return 
